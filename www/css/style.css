@@ -1,0 +1,24 @@
+/**/
+
+.page__background {
+  background-color: #FFCCFF;
+}
+
+.page__content {
+  color: #000000;
+  text-align: center;
+}
+
+#latitude {
+  margin-top: 20px;
+}
+
+#animal {
+  margin-top: 20px;
+  opacity: 0;
+}
+
+#animal.active {
+  opacity: 1;
+}
+
