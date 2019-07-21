@@ -10,6 +10,8 @@
     <script src="js/selectCharacter.js"></script>
     <link rel="stylesheet" href="css/selectCharacter.css">
     <script>
+        var selectedChar = -1;
+
         ons.bootstrap();
         ons.disableAutoStatusBarFill();  // (Monaca enables StatusBar plugin by default)
         ons.ready( function() {
@@ -17,6 +19,9 @@
     </script>
 </head>
 <body>
+<!--
+  <ons-navigator var="appNavigator" page="splash.html"></ons-navigator>
+-->
   <ons-navigator var="appNavigator" page="splash.html"></ons-navigator>
 </body>
 </html>

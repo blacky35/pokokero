@@ -10,6 +10,7 @@
   font-size: 30px;
   color: #000000;
   text-align: center;
+  border: solid 10px blue;
 }
 
 .titleholder1 {
@@ -57,11 +58,13 @@
 }
 
 #title51.animation {
+  opacity: 1;
+  /*
   animation: blinking 0.5s linear 0s infinite alternate-reverse;
+  */
 }
 
 @keyframes blinking {
   0% { opacity: 1; }
-  50% { opacity: 1; }
   100% { opacity: 0; }
 }

@@ -1,23 +1,39 @@
 // This is a JavaScript file
 
+var numCharacters = 3;
+
+var characters = [
+  { name: "アンちゃん", img: "anchan.png" },
+  { name: "キテルグマ", img: "kiteruguma.png" },
+  { name: "くろうさ", img: "kurousa.png" },
+];
+
 $(document).on('pageinit', '#selectCharacter', function() {
-  console.log("selectCharacter");
-  $('.page__content')[0].style.fontSize = "30px";
-  $('.page__content')[0].style.color = "black";
-  $('.page__content')[0].style.textAlign = "center";
-/*
-  setTimeout(function() { $('#title11').addClass('animation'); }, 1000);
-  setTimeout(function() { $('#title12').addClass('animation'); }, 2000);
-  setTimeout(function() { $('#title13').addClass('animation'); }, 3000);
-  setTimeout(function() { $('#title1').addClass('animation'); }, 4000);
-  setTimeout(function() { $('#title21').addClass('animation'); }, 5000);
-  setTimeout(function() { $('.titleholder2').addClass('animation'); }, 6000);
-  setTimeout(function() { $('#title41').addClass('animation'); }, 7000);
-  setTimeout(function() {
-     $('#title51').addClass('animation');
-     $('#splash').on('click', function() {
-       appNavigator.resetToPage("selectCharacter.html", { animation: "slide" } );
-     })
-    }, 10000);
-*/
+  for (var i = 0; i < numCharacters; i++) {
+    $('.charImg')[i].src = "img/" + characters[i].img;
+  }
+
+  $(document).on('tap', '.charImg', function(event) {
+//    console.log("tap" + $('#charSelect')[0].disabled);
+    for (var i = 0; i < numCharacters; i++) {
+      $('.charImg')[i].classList.remove("selected");
+    }
+    $(this).addClass("selected");
+    selectedChar = $(this)[0].id - 1;
+  });
 });
+
+function confirmSelected() {
+  if (selectedChar >= 0) {
+//    console.log(selectedChar +  " is selected.");
+    ons.notification.confirm({
+      message: characters[selectedChar].name + " でいいですか?",
+      title: "確認",
+      callback: function(index) {
+        if (index == 1) {
+          appNavigator.resetToPage("map.html", { animation: "slide" } );
+        }
+      }
+    });
+  }
+}

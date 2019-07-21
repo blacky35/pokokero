@@ -1,5 +1,22 @@
 <ons-page id="selectCharacter" modifier="selectCharacter">
-  <div>
-    <span>aaa</span>
+  <div id="select1">
+    <span>キャラクターを選んでね</span>
   </div>
+  <ons-gesture-detector class="charList">
+    <div id="char1" class="char">
+      <img src="img/charbase.png" class="charBase">
+      <img id="1" src="" class="charImg">
+    </div>
+    <div id="char2" class="char">
+      <img src="img/charbase.png" class="charBase">
+      <img id="2" src="" class="charImg">
+    </div>
+    <div id="char3" class="char">
+      <img src="img/charbase.png" class="charBase">
+      <img id="3" src="" class="charImg">
+    </div>
+  </ons-gesture-detector>
+  <ons-button id="charSelect" onclick="confirmSelected();">
+    キミに決めた!
+  </ons-button>
 </ons-page>
