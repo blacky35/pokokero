@@ -1,0 +1,67 @@
+/**/
+
+/*
+.page--splash__background {
+  background-color: #FFCCFF;
+}
+*/
+
+.page--splash__content {
+  font-size: 30px;
+  color: #000000;
+  text-align: center;
+}
+
+.titleholder1 {
+  transition: all 1s linear;
+  opacity: 0;
+} 
+
+.titleholder1.animation {
+  opacity: 1;  
+}
+
+.titleholder2 {
+  transition: all 1s ease-in-out;
+}
+
+.titleholder2.animation {
+  color: red;
+}
+
+#title1 {
+  transition: all 1s ease-in-out;
+  margin-top: 250px;
+}
+
+#title1.animation {
+  margin-top: 100px;
+}
+
+#title2 {
+  margin-top: 50px;
+}
+
+#title4 {
+  margin-top: 50px;
+  color: red;
+}
+
+#title41.animation {
+  font-size: 70px;
+}
+
+#title51 {
+  font-size: 20px;
+  opacity: 0;
+}
+
+#title51.animation {
+  animation: blinking 0.5s linear 0s infinite alternate-reverse;
+}
+
+@keyframes blinking {
+  0% { opacity: 1; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}

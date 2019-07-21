@@ -1,12 +1,6 @@
 /**/
 
-/*
-.page__background {
-  background-color: #FFCCFF;
-}
-*/
-
-.page__content {
+.page--selectCharacter__content {
   font-size: 30px;
   color: #000000;
   text-align: center;
@@ -49,4 +43,19 @@
 
 #title41.animation {
   font-size: 70px;
+}
+
+#title51 {
+  font-size: 20px;
+  opacity: 0;
+}
+
+#title51.animation {
+  animation: blinking 0.5s linear 0s infinite alternate-reverse;
+}
+
+@keyframes blinking {
+  0% { opacity: 1; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
 }
