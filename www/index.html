@@ -10,46 +10,19 @@
     <script>
         ons.bootstrap();
         ons.disableAutoStatusBarFill();  // (Monaca enables StatusBar plugin by default)
-        ons.ready(startup);
+        ons.ready(function() {
+          setTimeout(function() { $('#title11').addClass('animation'); }, 1000);
+          setTimeout(function() { $('#title12').addClass('animation'); }, 2000);
+          setTimeout(function() { $('#title13').addClass('animation'); }, 3000);
+          setTimeout(function() { $('#title1').addClass('animation'); }, 4000);
+          setTimeout(function() { $('#title21').addClass('animation'); }, 5000);
+          setTimeout(function() { $('.titleholder2').addClass('animation'); }, 6000);
+          setTimeout(function() { $('#title41').addClass('animation'); }, 7000);
+<!--          setTimeout(function() { ons.navigator.replacePage('main.html'); }, 9000): -->
+        });
     </script>
 </head>
 <body>
-    <ons-modal var="myModal">
-    準備中...
-    </ons-modal>
-    <ons-page>
-        <ons-toolbar>
-          <div class="center">くろうさGO!</div>
-        </ons-toolbar>
-        <div class="page__background"></div>
-        <div class="page__content">
-          <div id="collection" style="text-align: left">
-          </div>
-        	<div id="latitude">
-            緯度: <span id="latVal"></span>
-         </div>
-          <div id="longitude">
-            経度: <span id="lngVal"></span>
-         </div>
-          <div id="distance">
-            移動距離: <span id="distVal"></span> m
-         </div>
-         <p>
-           <img id="animal" width"120" height="180"><br>
-           <span id="text"></span>
-         </p>
-         <p>
-           <ons-button class="buttonClass" style="visibility: hidden;" onclick="nadenade()">なでなでする</ons-button>
-           <ons-button class="buttonClass" style="visibility: hidden;" onclick="bikkuri()">おどろかす</ons-button>
-         </p>
-        </div>
-        <ons-bottom-toolbar style="text-align: right;">
-<!--
-            <ons-toolbar-button class="put-marker">
-                <ons-icon icon="fa-map-marker" size="20px"></ons-icon> xxx
-            </ons-toolbar-button>
--->
-        </ons-bottom-toolbar>
-    </ons-page>
+  <ons-navigator page="splash.html"></ons-navigator>
 </body>
 </html>

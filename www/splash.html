@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="js/main.js"></script>
+    <script>
+        $(ducument).on('pageinit', '#splash', function() {
+        $('#title0').text("bbb");
+          setTimeout(function() { $('#title11').addClass('animation'); }, 1000);
+          setTimeout(function() { $('#title12').addClass('animation'); }, 2000);
+          setTimeout(function() { $('#title13').addClass('animation'); }, 3000);
+          setTimeout(function() { $('#title1').addClass('animation'); }, 4000);
+          setTimeout(function() { $('#title21').addClass('animation'); }, 5000);
+          setTimeout(function() { $('.titleholder2').addClass('animation'); }, 6000);
+          setTimeout(function() { $('#title41').addClass('animation'); }, 7000);
+<!--          setTimeout(function() { ons.navigator.replacePage('main.html'); }, 9000): -->
+        });
+    </script>
+</head>
+<body>
+    <ons-page id="splash">
+      <div id="title0">aaa</div>
+      <div id="title1">
+        <span id="title11" class="titleholder1"><span id="title31" class="titleholder2">ポ</span>コっと</span><br>
+        <span id="title12" class="titleholder1"><span id="title32" class="titleholder2">ケ</span>ロケロ</span><br>
+        <span id="title13" class="titleholder1"><span id="title33" class="titleholder2">モン</span>スター</span><br>
+      </div>
+      <div id="title2">
+        <span id="title21" class="titleholder1">略して</span><br>
+      </div>        
+      <div id="title4">
+        <span id="title41" class="titleholder1">ポケモン</span><br>
+      </div>        
+    </ons-page>
+</body>
+</html>
