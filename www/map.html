@@ -1,5 +1,11 @@
 <ons-page id="map" modifier="map">
   <div>
-    <span>map</span>
+    <span id="msg"></span><br>
+    <span id="msg2"></span><br>
+    <span id="msg3"></span>
+    <ons-gesture-detector>
+      <canvas id="viewCanvas" width="300px" height="300px"></canvas>
+    </ons-gesture-detector>
+    <canvas id="mapCanvas" style="display: none;"></canvas>
   </div>
 </ons-page>

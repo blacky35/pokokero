@@ -1,0 +1,12 @@
+/**/
+
+.page--map__content {
+  font-size: 10px;
+  color: #000000;
+  text-align: center;
+  border: solid 10px blue;  
+}
+
+#viewCanvas {
+  margin-top: 150px;
+}
