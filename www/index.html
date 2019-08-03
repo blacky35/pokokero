@@ -14,16 +14,21 @@
     <script>
         var selectedChar = -1;
 
-        ons.bootstrap();
+        ons.bootstrap()
+        .controller('ctrl', function($scope) {
+          // 検出するスワイプの速さの設定（小さくしたほうがゆっくり）
+          Hammer.gestures.Swipe.defaults.swipeVelocityX = 0.01;
+          Hammer.gestures.Swipe.defaults.swipeVelocityY = 0.01;
+        });
         ons.disableAutoStatusBarFill();  // (Monaca enables StatusBar plugin by default)
         ons.ready( function() {
         });
     </script>
 </head>
-<body>
+<body ng-controller="ctrl">
 <!--
   <ons-navigator var="appNavigator" page="splash.html"></ons-navigator>
 -->
-  <ons-navigator var="appNavigator" page="map.html"></ons-navigator>
+  <ons-navigator var="appNavigator" page="splash.html"></ons-navigator>
 </body>
 </html>

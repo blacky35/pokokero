@@ -65,6 +65,7 @@ function drawMap(cx, cy, top, bottom, left, right) {
       var wy = cy - margin_y + y;
       if (wx < 0 || wy < 0 || wx >= WORLD_WIDTH || wy >= WORLD_HEIGHT) {
         s += "0 ";
+        context.drawImage(edge, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
         continue;
       }
 
@@ -142,7 +143,9 @@ $(document).on('pageinit', '#map', function() {
   $('#mapCanvas')[0].height = $('#viewCanvas')[0].height + CELL_HEIGHT * 2;
   $('#mapCanvas')[0].getContext('2d').translate(CELL_WIDTH, CELL_HEIGHT);
 
-  $('#msg').text($('#mapCanvas')[0].width + " " + $('#mapCanvas')[0].height);
+  $('#msg').text($('#mapCanvas')[0].width + " " + $('#mapCanvas')[0].height + " " + $('#gesture')[0].swipeVelocityX);
+
+  $('#gesture')[0].swipeVelocityX = 0.1;
 
   sougen.onload = initMap;
   iwa.onload = initMap;
