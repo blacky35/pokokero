@@ -7,6 +7,44 @@
   border: solid 10px blue;  
 }
 
-#viewCanvas {
+#mapArea {
+  position: relative;
   margin-top: 150px;
+}
+
+#viewCanvas {
+  transition: all 1s ease-in-out;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#viewCanvas.animation {
+  animation: encount 1s linear;
+}
+
+#yourChar {
+  position: absolute;
+  width: 42px;
+  height: 56px;
+  top: 122px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#yourChar.animation {
+  animation: encount 1s linear;
+}
+
+@keyframes encount {
+  0% { transform: translateX(-50%) perspective(500px) translateZ(100px) rotateZ(0deg); }
+  25% { transform: translateX(-50%) perspective(500px) translateZ(200px) rotateZ(180deg); }
+  50% { transform: translateX(-50%) perspective(500px) translateZ(300px) rotateZ(360deg); }
+  75% { transform: translateX(-50%) perspective(500px) translateZ(400px) rotateZ(540deg); }
+  100% { transform: translateX(-50%) perspective(500px) translateZ(500px) rotateZ(720deg); }
+}
+
+#msgArea {
+  margin-top: 460px;
+  font-size: 24px;
 }

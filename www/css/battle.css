@@ -1,0 +1,12 @@
+/**/
+
+.page--battle__content {
+  font-size: 10px;
+  color: #000000;
+  text-align: center;
+  border: solid 10px blue;  
+}
+
+#backButton {
+  margin-top: 350px;
+}

@@ -3,14 +3,14 @@
 var numCharacters = 3;
 
 var characters = [
-  { name: "アンちゃん", img: "anchan.png" },
-  { name: "キテルグマ", img: "kiteruguma.png" },
-  { name: "くろうさ", img: "kurousa.png" },
+  { name: "アンちゃん", img: "anchan.png", imgB: "anchanB.png", imgR: "anchanR.png", imgL: "anchanL.png" },
+  { name: "キテルグマ", img: "kiteruguma.png", imgB: "kiterugumaB.png", imgR: "kiterugumaR.png", imgL: "kiterugumaL.png" },
+  { name: "くろうさ", img: "kurousa.png", imgB: "kurousaB.png", imgR: "kurousaR.png", imgL: "kurousaL.png" },
 ];
 
 $(document).on('pageinit', '#selectCharacter', function() {
   for (var i = 0; i < numCharacters; i++) {
-    $('.charImg')[i].src = "img/" + characters[i].img;
+    $('.charImg')[i].src = "img/characters/" + characters[i].img;
   }
 
   $(document).on('tap', '.charImg', function(event) {
@@ -19,19 +19,21 @@ $(document).on('pageinit', '#selectCharacter', function() {
       $('.charImg')[i].classList.remove("selected");
     }
     $(this).addClass("selected");
-    selectedChar = $(this)[0].id - 1;
+    yourChar = characters[$(this)[0].id - 1];
   });
 });
 
 function confirmSelected() {
-  if (selectedChar >= 0) {
+  if (yourChar != null) {
 //    console.log(selectedChar +  " is selected.");
     ons.notification.confirm({
-      message: characters[selectedChar].name + " でいいですか?",
+      message: yourChar.name + " でいいですか?",
       title: "確認",
       callback: function(index) {
         if (index == 1) {
           appNavigator.resetToPage("map.html", { animation: "slide" } );
+        } else {
+          yourChar = null;
         }
       }
     });

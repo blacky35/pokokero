@@ -1,8 +1,14 @@
 // This is a JavaScript file
 
-var SG = 10;  // sougen
-var IW = 20;  // yama
 var EG = 0;
+var SG = 1;  // sougen
+var IW = 2;  // yama
+
+var elements = [
+  { img: new Image(), src: "edge.png" },    // EG
+  { img: new Image(), src: "sougen2.png" }, // SG
+  { img: new Image(), src: "iwa.png" },     // IW
+];
 
 var WORLD_WIDTH = 20;
 var WORLD_HEIGHT = 16;
@@ -26,18 +32,17 @@ var world = [
   [EG, EG, EG, EG, EG, EG, EG, EG, EG, EG, EG, EG, EG, EG, EG, EG, EG, EG, EG, EG],
 ]; 
 
+var monsters = [
+  { name: "スライム", img: new Image(), src: "slime.png" },
+];
+
 var charX = 10;
 var charY = 12;
 
-var NUM_IMG = 3;
 var countImg = 0;
 
 var CELL_WIDTH = 60;
 var CELL_HEIGHT = 60;
-
-var sougen = new Image();
-var iwa = new Image();
-var edge = new Image();
 
 function drawMap(cx, cy, top, bottom, left, right) {
   var viewCanvas = $('#viewCanvas')[0];
@@ -64,20 +69,19 @@ function drawMap(cx, cy, top, bottom, left, right) {
       var wx = cx - margin_x + x;
       var wy = cy - margin_y + y;
       if (wx < 0 || wy < 0 || wx >= WORLD_WIDTH || wy >= WORLD_HEIGHT) {
-        s += "0 ";
-        context.drawImage(edge, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+        s += "-1 ";
+        context.drawImage(elements[0].img, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
         continue;
       }
 
-      if (world[wy][wx] == SG) {
-        s += "S ";
-        context.drawImage(sougen, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
-      } else if (world[wy][wx] == IW) {
-        s += "I ";
-        context.drawImage(iwa, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
-      } else if (world[wy][wx] == EG) {
-        s += "E ";
-        context.drawImage(edge, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+      var mo = Math.floor(world[wy][wx] / 100) - 1;
+      var el = world[wy][wx] - 100 * (mo + 1);
+
+      s += world[wy][wx] + " ";
+      context.drawImage(elements[el].img, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+
+      if (mo >= 0) {
+        context.drawImage(monsters[mo].img, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
       }
     }
   }
@@ -88,7 +92,7 @@ function drawMap(cx, cy, top, bottom, left, right) {
 }
 
 function initMap() {
-  if (++countImg < NUM_IMG) return;
+  if (++countImg < elements.length + monsters.length) return;
   drawMap(charX, charY, 0, 0, 0, 0);
 }
 
@@ -97,9 +101,16 @@ var moveFlg = false;
 function move(dx, dy) {
   if (moveFlg) return;
 
-  if (world[charY + dy][charX + dx] != SG) {
-    return;
-  }
+  var charImgSrc = "img/characters/" + yourChar.img;
+  if (dx <  0) charImgSrc = "img/characters/" + yourChar.imgR;
+  if (dx > 0) charImgSrc = "img/characters/" + yourChar.imgL;
+  if (dy < 0) charImgSrc = "img/characters/" + yourChar.imgB;
+
+  $('#yourChar')[0].src = charImgSrc;
+
+
+  var el = world[charY + dy][charX + dx] - Math.floor(world[charY + dy][charX + dx] / 100) * 100;
+  if (el != SG) return;
 
   moveFlg = true;
 
@@ -132,9 +143,43 @@ function scroll(dx, dy, dd) {
   } else {
     charX += dx;
     charY += dy;
-    moveFlg = false;
+
+    var mo = Math.floor(world[charY][charX] / 100) - 1;
+    if (mo >= 0) {
+      $('#msg').text(monsters[mo].name + " があらわれた！");
+      setTimeout(function() {
+        $('#viewCanvas').addClass('animation');
+        $('#yourChar').addClass('animation');
+        setTimeout(function(){
+          appNavigator.pushPage("battle.html", { animation: "none" } );
+          $('#viewCanvas').removeClass('animation');
+          $('#yourChar').removeClass('animation');
+        },1000);
+        moveFlg = false;
+      }, 1000);
+    } else {
+      moveFlg = false;
+    }
 //    console.log("scroll end " +charX + " " + charY);
 //    $('#msg').text("move end");
+  }
+}
+
+function swipe(event) {
+  var direction = event.originalEvent.gesture.direction;
+
+  $('#msg').text("move " + direction + " " + charX + " " + charY + " " + moveFlg);
+
+  if (direction == 'left') {
+    move(1, 0);
+  } else if (direction == 'right') {
+    move(-1, 0);
+  } else if (direction == 'up') {
+   move(0, 1);
+  } else if (direction == 'down') {
+    move(0, -1);
+  } else {
+    console.log("ignored");
   }
 }
 
@@ -143,38 +188,41 @@ $(document).on('pageinit', '#map', function() {
   $('#mapCanvas')[0].height = $('#viewCanvas')[0].height + CELL_HEIGHT * 2;
   $('#mapCanvas')[0].getContext('2d').translate(CELL_WIDTH, CELL_HEIGHT);
 
-  $('#msg').text($('#mapCanvas')[0].width + " " + $('#mapCanvas')[0].height + " " + $('#gesture')[0].swipeVelocityX);
+  var a = new Array();
+  a[10] = 1;
+  a[20] = 2;
 
-  $('#gesture')[0].swipeVelocityX = 0.1;
+  $('#msg').text($('#mapCanvas')[0].width + " " + $('#mapCanvas')[0].height + " " + a.length);
 
-  sougen.onload = initMap;
-  iwa.onload = initMap;
-  edge.onload = initMap;
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].img.onload = initMap;
+    elements[i].img.src = "img/world/" + elements[i].src;
+  }
 
-  sougen.src = "img/sougen2.png";
-  iwa.src = "img/iwa.png";  
-  edge.src = "img/edge.png";  
+  for (var i = 0; i < monsters.length; i++) {
+    monsters[i].img.onload = initMap;
+    monsters[i].img.src = "img/monsters/" + monsters[i].src;
+  }
 
-//  $(document).on('touchmove', '#viewCanvas', function(event) {
-//    event.preventDefault();
-//  });
+  if (yourChar == null) {
+    yourChar = characters[Math.floor(Math.random() * 3)];
+  }
+  
+  $('#yourChar')[0].src = "img/characters/" + yourChar.img;
 
-  $(document).on('swipe', '#viewCanvas', function(event) {
-    var direction = event.originalEvent.gesture.direction;
+  var num_mo = 0;
 
-    $('#msg').text("move " + direction + " " + charX + " " + charY + " " + moveFlg);
+  do {
+    var mx = Math.floor(Math.random() * WORLD_WIDTH);
+    var my = Math.floor(Math.random() * WORLD_HEIGHT);
+    if ((mx == charX && my == charY) || world[my][mx] != SG) continue;
 
-    if (direction == 'left') {
-      move(1, 0);
-    } else if (direction == 'right') {
-      move(-1, 0);
-    } else if (direction == 'up') {
-     move(0, 1);
-    } else if (direction == 'down') {
-      move(0, -1);
-    } else {
-      console.log("ignored");
-    }
-  });
+    var mo = Math.floor(Math.random() * monsters.length);
+    world[my][mx] += 100* (mo + 1);
+    num_mo++;
+  } while (num_mo < 10);
 
+  $(document).on('swipe', '#viewCanvas', swipe);
+  $(document).on('swipe', '#yourChar', swipe);
 });
+
