@@ -55,7 +55,7 @@ function drawMap(cx, cy, top, bottom, left, right) {
   var margin_x = (num_x - 1) / 2;
   var margin_y = (num_y - 1) / 2;
 
-  $('#msg2').text("drawMap " + cx + " " + cy + " " + top + " " + bottom + " " + left + " " + right + " " + margin_x + " " + margin_y);
+//  $('#msg2').text("drawMap " + cx + " " + cy + " " + top + " " + bottom + " " + left + " " + right + " " + margin_x + " " + margin_y);
 
   var mapCanvas = $('#mapCanvas')[0];
   var context = mapCanvas.getContext('2d');
@@ -86,7 +86,7 @@ function drawMap(cx, cy, top, bottom, left, right) {
     }
   }
 
-  $('#msg3').text((cx - margin_x + left) + " " + (cy - margin_y + top) + " " + s);
+//  $('#msg3').text((cx - margin_x + left) + " " + (cy - margin_y + top) + " " + s);
 
   viewCanvas.getContext('2d').drawImage(mapCanvas, CELL_WIDTH, CELL_HEIGHT, width, height, 0, 0, width, height);
 }
@@ -102,15 +102,26 @@ function move(dx, dy) {
   if (moveFlg) return;
 
   var charImgSrc = "img/characters/" + yourChar.img;
-  if (dx <  0) charImgSrc = "img/characters/" + yourChar.imgR;
-  if (dx > 0) charImgSrc = "img/characters/" + yourChar.imgL;
-  if (dy < 0) charImgSrc = "img/characters/" + yourChar.imgB;
+  var dir = "down";
+  if (dx < 0) {
+    charImgSrc = "img/characters/" + yourChar.imgR;
+    dir = "right";
+  }
+  if (dx > 0) {
+    charImgSrc = "img/characters/" + yourChar.imgL;
+    dir = "left";
+  }
+  if (dy < 0) {
+    charImgSrc = "img/characters/" + yourChar.imgB;
+    dir = "up";
+  }
 
   $('#yourChar')[0].src = charImgSrc;
 
-
   var el = world[charY + dy][charX + dx] - Math.floor(world[charY + dy][charX + dx] / 100) * 100;
   if (el != SG) return;
+
+  addMessage("move " + dir);
 
   moveFlg = true;
 
@@ -146,7 +157,7 @@ function scroll(dx, dy, dd) {
 
     var mo = Math.floor(world[charY][charX] / 100) - 1;
     if (mo >= 0) {
-      $('#msg').text(monsters[mo].name + " があらわれた！");
+      addMessage(monsters[mo].name + "があらわれた！");
       setTimeout(function() {
         $('#viewCanvas').addClass('animation');
         $('#yourChar').addClass('animation');
@@ -168,7 +179,7 @@ function scroll(dx, dy, dd) {
 function swipe(event) {
   var direction = event.originalEvent.gesture.direction;
 
-  $('#msg').text("move " + direction + " " + charX + " " + charY + " " + moveFlg);
+//  $('#msg').text("move " + direction + " " + charX + " " + charY + " " + moveFlg);
 
   if (direction == 'left') {
     move(1, 0);
@@ -183,6 +194,17 @@ function swipe(event) {
   }
 }
 
+var msgLine = 0;
+
+function addMessage(msg) {
+  $('#msgArea').find('li').eq(msgLine).text(msg);
+  if (msgLine < 3) {
+    msgLine++;
+  } else {
+    $('#msgArea').vTicker('next', {animate:true});
+  }
+}
+
 $(document).on('pageinit', '#map', function() {
   $('#mapCanvas')[0].width = $('#viewCanvas')[0].width + CELL_WIDTH * 2;
   $('#mapCanvas')[0].height = $('#viewCanvas')[0].height + CELL_HEIGHT * 2;
@@ -192,7 +214,7 @@ $(document).on('pageinit', '#map', function() {
   a[10] = 1;
   a[20] = 2;
 
-  $('#msg').text($('#mapCanvas')[0].width + " " + $('#mapCanvas')[0].height + " " + a.length);
+//  $('#msg').text($('#mapCanvas')[0].width + " " + $('#mapCanvas')[0].height + " " + a.length);
 
   for (var i = 0; i < elements.length; i++) {
     elements[i].img.onload = initMap;
@@ -224,5 +246,11 @@ $(document).on('pageinit', '#map', function() {
 
   $(document).on('swipe', '#viewCanvas', swipe);
   $(document).on('swipe', '#yourChar', swipe);
+
+  $('#msgArea').vTicker({
+    showItems: 3,
+    padding: 2,
+    startPaused: true,
+  });
 });
 
