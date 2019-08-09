@@ -44,6 +44,9 @@ var countImg = 0;
 var CELL_WIDTH = 60;
 var CELL_HEIGHT = 60;
 
+var moveFlg = false;
+var msgFlg = false;
+
 function drawMap(cx, cy, top, bottom, left, right) {
   var viewCanvas = $('#viewCanvas')[0];
   var width = viewCanvas.width;
@@ -96,10 +99,8 @@ function initMap() {
   drawMap(charX, charY, 0, 0, 0, 0);
 }
 
-var moveFlg = false;
-
 function move(dx, dy) {
-  if (moveFlg) return;
+  if (moveFlg || msgFlg) return;
 
   var charImgSrc = "img/characters/" + yourChar.img;
   var dir = "down";
@@ -121,9 +122,9 @@ function move(dx, dy) {
   var el = world[charY + dy][charX + dx] - Math.floor(world[charY + dy][charX + dx] / 100) * 100;
   if (el != SG) return;
 
-  addMessage("move " + dir);
-
   moveFlg = true;
+
+  addMessage("move " + dir);
 
   var top = 0, bottom = 0, left = 0, right = 0;
 
@@ -166,10 +167,10 @@ function scroll(dx, dy, dd) {
           $('#viewCanvas').removeClass('animation');
           $('#yourChar').removeClass('animation');
         },1000);
-        moveFlg = false;
+        setTimeout(function(){moveFlg = false;}, 300);
       }, 1000);
     } else {
-      moveFlg = false;
+      setTimeout(function(){moveFlg = false;}, 300);
     }
 //    console.log("scroll end " +charX + " " + charY);
 //    $('#msg').text("move end");
@@ -197,11 +198,15 @@ function swipe(event) {
 var msgLine = 0;
 
 function addMessage(msg) {
+  msgFlg = true;
+  $('#msg2').text("addMessage0 " + msgFlg);
   $('#msgArea').find('li').eq(msgLine).text(msg);
   if (msgLine < 3) {
     msgLine++;
+    msgFlg = false;
+    $('#msg2').text("addMessage1 " + msgFlg);
   } else {
-    $('#msgArea').vTicker('next', {animate:true});
+    if(!$('#msgArea').vTicker('next', {animate:true})) msgFlg = false;
   }
 }
 
@@ -247,10 +252,15 @@ $(document).on('pageinit', '#map', function() {
   $(document).on('swipe', '#viewCanvas', swipe);
   $(document).on('swipe', '#yourChar', swipe);
 
+  $('#msgArea').on('vticker.afterTick', function() {
+    msgFlg = false;
+    $('#msg2').text("addMessage2 " + msgFlg);
+  });
   $('#msgArea').vTicker({
     showItems: 3,
     padding: 2,
     startPaused: true,
+    pause: 0,
   });
 });
 
