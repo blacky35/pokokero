@@ -117,14 +117,14 @@ function move(dx, dy) {
     dir = "up";
   }
 
+  if (!addMessage("move " + dir)) return;
+
   $('#yourChar')[0].src = charImgSrc;
 
   var el = world[charY + dy][charX + dx] - Math.floor(world[charY + dy][charX + dx] / 100) * 100;
   if (el != SG) return;
 
   moveFlg = true;
-
-  addMessage("move " + dir);
 
   var top = 0, bottom = 0, left = 0, right = 0;
 
@@ -167,10 +167,10 @@ function scroll(dx, dy, dd) {
           $('#viewCanvas').removeClass('animation');
           $('#yourChar').removeClass('animation');
         },1000);
-        setTimeout(function(){moveFlg = false;}, 300);
+        moveFlg = false;
       }, 1000);
     } else {
-      setTimeout(function(){moveFlg = false;}, 300);
+      moveFlg = false;
     }
 //    console.log("scroll end " +charX + " " + charY);
 //    $('#msg').text("move end");
@@ -206,8 +206,13 @@ function addMessage(msg) {
     msgFlg = false;
     $('#msg2').text("addMessage1 " + msgFlg);
   } else {
-    if(!$('#msgArea').vTicker('next', {animate:true})) msgFlg = false;
+    if(!$('#msgArea').vTicker('next', {animate:true})) {
+      msgFlg = false;
+      return false;
+    }
   }
+
+  return true;
 }
 
 $(document).on('pageinit', '#map', function() {
@@ -260,7 +265,7 @@ $(document).on('pageinit', '#map', function() {
     showItems: 3,
     padding: 2,
     startPaused: true,
-    pause: 0,
+    pause: 10,
   });
 });
 
