@@ -45,9 +45,9 @@ var CELL_WIDTH = 60;
 var CELL_HEIGHT = 60;
 
 var moveFlg = false;
-var msgFlg = false;
+var msgQueue = [];
 
-function drawMap(cx, cy, top, bottom, left, right) {
+function drawMap(cx, cy, top, bottom, left, right, moFlg) {
   var viewCanvas = $('#viewCanvas')[0];
   var width = viewCanvas.width;
   var height = viewCanvas.height;
@@ -83,7 +83,7 @@ function drawMap(cx, cy, top, bottom, left, right) {
       s += world[wy][wx] + " ";
       context.drawImage(elements[el].img, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
 
-      if (mo >= 0) {
+      if (moFlg && mo >= 0) {
         context.drawImage(monsters[mo].img, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
       }
     }
@@ -96,11 +96,12 @@ function drawMap(cx, cy, top, bottom, left, right) {
 
 function initMap() {
   if (++countImg < elements.length + monsters.length) return;
-  drawMap(charX, charY, 0, 0, 0, 0);
+  drawMap(charX, charY, 0, 0, 0, 0, true);
 }
 
 function move(dx, dy) {
-  if (moveFlg || msgFlg) return;
+  if (moveFlg) return;
+  if (isMessaging()) return;
 
   var charImgSrc = "img/characters/" + yourChar.img;
   var dir = "down";
@@ -117,7 +118,7 @@ function move(dx, dy) {
     dir = "up";
   }
 
-  if (!addMessage("move " + dir)) return;
+  //addMessage("move " + dir);
 
   $('#yourChar')[0].src = charImgSrc;
 
@@ -133,7 +134,7 @@ function move(dx, dy) {
   if (dy < 0) top = -1;
   if (dy > 0) bottom = 1;
 
-  drawMap(charX, charY, top, bottom, left, right);
+  drawMap(charX, charY, top, bottom, left, right, true);
   setTimeout(function(){scroll(dx, dy, 0);}, 50);
 }
 
@@ -158,23 +159,32 @@ function scroll(dx, dy, dd) {
 
     var mo = Math.floor(world[charY][charX] / 100) - 1;
     if (mo >= 0) {
-      addMessage(monsters[mo].name + "があらわれた！");
-      setTimeout(function() {
-        $('#viewCanvas').addClass('animation');
-        $('#yourChar').addClass('animation');
-        setTimeout(function(){
-          appNavigator.pushPage("battle.html", { animation: "none" } );
-          $('#viewCanvas').removeClass('animation');
-          $('#yourChar').removeClass('animation');
-        },1000);
-        moveFlg = false;
-      }, 1000);
+      encount(mo);
     } else {
       moveFlg = false;
     }
 //    console.log("scroll end " +charX + " " + charY);
 //    $('#msg').text("move end");
   }
+}
+
+function encount(mo) {
+  addMessage(monsters[mo].name + "があらわれた！");
+  setTimeout(function() {
+    drawMap(charX, charY, 0, 0, 0, 0, false);
+    $('#yourChar').hide();
+    $('#viewCanvas').addClass('animation');
+    setTimeout(function(){
+      $('#viewCanvas').removeClass('animation');
+      setTimeout(function(){
+        $('#viewCanvas')[0].width = 300;
+        $('#viewCanvas')[0].height = 300;
+        drawMap(charX, charY, 0, 0, 0, 0, true);
+        $('#yourChar').show();
+        moveFlg = false;
+      },1000);
+    },5000);
+  },2000);
 }
 
 function swipe(event) {
@@ -195,24 +205,35 @@ function swipe(event) {
   }
 }
 
+function isMessaging() {
+  return (msgQueue.length != 0);
+}
+
+function addMessage(msg, force) {
+  msgQueue.push(msg);
+  setTimeout(showMessage, 100);
+}
+
 var msgLine = 0;
 
-function addMessage(msg) {
-  msgFlg = true;
-  $('#msg2').text("addMessage0 " + msgFlg);
-  $('#msgArea').find('li').eq(msgLine).text(msg);
-  if (msgLine < 3) {
-    msgLine++;
-    msgFlg = false;
-    $('#msg2').text("addMessage1 " + msgFlg);
-  } else {
-    if(!$('#msgArea').vTicker('next', {animate:true})) {
-      msgFlg = false;
-      return false;
+function showMessage() { 
+  if (msgQueue.length > 0) {
+    if (msgLine < 3) {
+      $('#msgArea').find('li').eq(msgLine).text(msgQueue.shift());
+      msgLine++;
+    } else {
+      if (!$('#msgArea').vTicker('next', {animate:true})) {
+          setTimeout(showMessage, 100);
+      }
     }
-  }
+  } 
+}
 
-  return true;
+function showMessageAfterTicking() {
+  setTimeout(function() {
+    $('#msgArea').find('li').eq(msgLine).text("");
+    $('#msgArea').find('li').eq(msgLine-1).text(msgQueue.shift());
+  }, 500);
 }
 
 $(document).on('pageinit', '#map', function() {
@@ -257,15 +278,13 @@ $(document).on('pageinit', '#map', function() {
   $(document).on('swipe', '#viewCanvas', swipe);
   $(document).on('swipe', '#yourChar', swipe);
 
-  $('#msgArea').on('vticker.afterTick', function() {
-    msgFlg = false;
-    $('#msg2').text("addMessage2 " + msgFlg);
-  });
   $('#msgArea').vTicker({
     showItems: 3,
     padding: 2,
     startPaused: true,
+    speed: 400,
     pause: 10,
   });
+  $('#msgArea').on('vticker.afterTick', showMessageAfterTicking);
 });
 

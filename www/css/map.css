@@ -1,10 +1,14 @@
 /**/
 
+.page--map__background {
+  background-color: #00aeff;
+}
+
 .page--map__content {
   font-size: 10px;
   color: #000000;
   text-align: center;
-  border: solid 10px blue;  
+//  border: solid 10px blue;  
 }
 
 #mapArea {
@@ -16,11 +20,14 @@
   transition: all 1s ease-in-out;
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+  transform: translateX(-50%) perspective(300px);
 }
 
 #viewCanvas.animation {
-  animation: encount 1s linear;
+  transform: translateX(-20%) perspective(300px) scale3d(10,10,10) rotateX(80deg);
 }
 
 #yourChar {
@@ -32,10 +39,12 @@
   transform: translateX(-50%);
 }
 
-#yourChar.animation {
-  animation: encount 1s linear;
+@keyframes encount {
+  0% { transform: translateX(-50%) }
+  100% {  }
 }
 
+/*
 @keyframes encount {
   0% { transform: translateX(-50%) perspective(500px) translateZ(100px) rotateZ(0deg); }
   25% { transform: translateX(-50%) perspective(500px) translateZ(200px) rotateZ(180deg); }
@@ -43,6 +52,7 @@
   75% { transform: translateX(-50%) perspective(500px) translateZ(400px) rotateZ(540deg); }
   100% { transform: translateX(-50%) perspective(500px) translateZ(500px) rotateZ(720deg); }
 }
+*/
 
 #msgArea {
   margin-top: 430px;
