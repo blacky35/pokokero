@@ -33,7 +33,7 @@ var world = [
 ]; 
 
 var monsters = [
-  { name: "スライム", img: new Image(), src: "slime.png" },
+  { name: "スライム", hp: 100, img: new Image(), src: "slime.png" },
 ];
 
 var charX = 10;
@@ -44,7 +44,7 @@ var countImg = 0;
 var CELL_WIDTH = 60;
 var CELL_HEIGHT = 60;
 
-var moveFlg = false;
+var isMoving = false;
 var msgQueue = [];
 
 function drawMap(cx, cy, top, bottom, left, right, moFlg) {
@@ -100,9 +100,6 @@ function initMap() {
 }
 
 function move(dx, dy) {
-  if (moveFlg) return;
-  if (isMessaging()) return;
-
   var charImgSrc = "img/characters/" + yourChar.img;
   var dir = "down";
   if (dx < 0) {
@@ -125,7 +122,7 @@ function move(dx, dy) {
   var el = world[charY + dy][charX + dx] - Math.floor(world[charY + dy][charX + dx] / 100) * 100;
   if (el != SG) return;
 
-  moveFlg = true;
+  isMoving = true;
 
   var top = 0, bottom = 0, left = 0, right = 0;
 
@@ -161,33 +158,71 @@ function scroll(dx, dy, dd) {
     if (mo >= 0) {
       encount(mo);
     } else {
-      moveFlg = false;
+      isMoving = false;
     }
 //    console.log("scroll end " +charX + " " + charY);
 //    $('#msg').text("move end");
   }
 }
 
+var isFighting = false;
+
 function encount(mo) {
   addMessage(monsters[mo].name + "があらわれた！");
+  $('#yourChar').addClass('animation');
+  $('#yourChar')[0].src = "img/characters/" + yourChar.imgB;
+  $('#yourCharHP').addClass('animation');
+  $('#yourCharHP').show();
+  $('#monsterChar').addClass('animation');
+  $('#monsterChar')[0].src = "img/monsters/" + monsters[mo].src;
+  $('#monsterChar').show();
+  $('#monsterCharHP').addClass('animation');
+  $('#monsterCharHP').show();
   setTimeout(function() {
     drawMap(charX, charY, 0, 0, 0, 0, false);
-    $('#yourChar').hide();
     $('#viewCanvas').addClass('animation');
+    $('#yourChar').removeClass('animation').addClass('fight');
+    $('#yourCharHP').removeClass('animation').addClass('fight');
+    $('#monsterChar').removeClass('animation').addClass('fight');
+    $('#monsterCharHP').removeClass('animation').addClass('fight');
+    $('#button1')[0].src = "img/buttons/button-fight.png";
+    $('#button1').show();
+    $('#button2')[0].src = "img/buttons/button-runaway.png";
+    $('#button2').show();
+    isFighting = true;
+    isMoving = false;
+
+//    fightOver();
+  },100);
+}
+
+function fightOver() {
+  setTimeout(function(){
+    $('#monsterChar').hide();
+    $('#monsterChar').removeClass('fight');
+    $('#monsterCharHP').hide();
+    $('#monsterCharHP').removeClass('fight');
+    $('#yourChar').hide();
+    $('#yourChar').removeClass('fight');
+    $('#yourCharHP').hide();
+    $('#yourCharHP').removeClass('fight');
+    $('#button1').hide();
+    $('#button2').hide();
+    $('#viewCanvas').removeClass('animation');
     setTimeout(function(){
-      $('#viewCanvas').removeClass('animation');
-      setTimeout(function(){
-        $('#viewCanvas')[0].width = 300;
-        $('#viewCanvas')[0].height = 300;
-        drawMap(charX, charY, 0, 0, 0, 0, true);
-        $('#yourChar').show();
-        moveFlg = false;
-      },1000);
-    },5000);
-  },2000);
+      $('#viewCanvas')[0].width = 300;
+      $('#viewCanvas')[0].height = 300;
+      drawMap(charX, charY, 0, 0, 0, 0, true);
+      $('#yourChar').show();
+      isFighting = false;
+    },1000);
+  },5000);
 }
 
 function swipe(event) {
+  if (isMoving || isFighting) return;
+  if (isMessaging()) return;
+
   var direction = event.originalEvent.gesture.direction;
 
 //  $('#msg').text("move " + direction + " " + charX + " " + charY + " " + moveFlg);
@@ -205,11 +240,16 @@ function swipe(event) {
   }
 }
 
+function tap(event) {
+  $('#msg2').text('tap ' + event.originalEvent.gesture.target.id);
+//  event.originalEvent.gesture.target.addClass("tap");
+}
+
 function isMessaging() {
   return (msgQueue.length != 0);
 }
 
-function addMessage(msg, force) {
+function addMessage(msg) {
   msgQueue.push(msg);
   setTimeout(showMessage, 100);
 }
@@ -277,6 +317,8 @@ $(document).on('pageinit', '#map', function() {
 
   $(document).on('swipe', '#viewCanvas', swipe);
   $(document).on('swipe', '#yourChar', swipe);
+  $(document).on('tap', '#button1', tap);
+  $(document).on('tap', '#button2', tap);
 
   $('#msgArea').vTicker({
     showItems: 3,

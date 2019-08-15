@@ -3,9 +3,9 @@
 var numCharacters = 3;
 
 var characters = [
-  { name: "いとうと", img: "anchan2.png", imgB: "anchanB2.png", imgR: "anchanR2.png", imgL: "anchanL2.png" },
-  { name: "キテルグマ", img: "kiteruguma2.png", imgB: "kiterugumaB2.png", imgR: "kiterugumaR2.png", imgL: "kiterugumaL2.png" },
-  { name: "くろうさ", img: "kurousa2.png", imgB: "kurousaB2.png", imgR: "kurousaR2.png", imgL: "kurousaL2.png" },
+  { name: "いとうと", hp: 100, img: "anchan2.png", imgB: "anchanB2.png", imgR: "anchanR2.png", imgL: "anchanL2.png" },
+  { name: "キテルグマ", hp: 100, img: "kiteruguma2.png", imgB: "kiterugumaB2.png", imgR: "kiterugumaR2.png", imgL: "kiterugumaL2.png" },
+  { name: "くろうさ", hp: 100, img: "kurousa2.png", imgB: "kurousaB2.png", imgR: "kurousaR2.png", imgL: "kurousaL2.png" },
 ];
 
 $(document).on('pageinit', '#selectCharacter', function() {
