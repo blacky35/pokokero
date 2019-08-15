@@ -36,6 +36,9 @@ var monsters = [
   { name: "スライム", hp: 100, img: new Image(), src: "slime.png" },
 ];
 
+var FIGHT = { role: "fight", src: "button-fight.png" };
+var RUNAWAY = { role: "runaway", src: "button-runaway.png" };
+
 var charX = 10;
 var charY = 12;
 
@@ -44,7 +47,7 @@ var countImg = 0;
 var CELL_WIDTH = 60;
 var CELL_HEIGHT = 60;
 
-var isMoving = false;
+var isPreventingEventsFlg = false;
 var msgQueue = [];
 
 function drawMap(cx, cy, top, bottom, left, right, moFlg) {
@@ -122,7 +125,7 @@ function move(dx, dy) {
   var el = world[charY + dy][charX + dx] - Math.floor(world[charY + dy][charX + dx] / 100) * 100;
   if (el != SG) return;
 
-  isMoving = true;
+  isPreventingEventsFlg = true;
 
   var top = 0, bottom = 0, left = 0, right = 0;
 
@@ -158,7 +161,7 @@ function scroll(dx, dy, dd) {
     if (mo >= 0) {
       encount(mo);
     } else {
-      isMoving = false;
+      isPreventingEventsFlg = false;
     }
 //    console.log("scroll end " +charX + " " + charY);
 //    $('#msg').text("move end");
@@ -185,43 +188,44 @@ function encount(mo) {
     $('#yourCharHP').removeClass('animation').addClass('fight');
     $('#monsterChar').removeClass('animation').addClass('fight');
     $('#monsterCharHP').removeClass('animation').addClass('fight');
-    $('#button1')[0].src = "img/buttons/button-fight.png";
+    $('#button1')[0].src = "img/buttons/" + FIGHT.src;
+    $('#button1')[0].setAttribute('role', FIGHT.role);
     $('#button1').show();
-    $('#button2')[0].src = "img/buttons/button-runaway.png";
+    $('#button2')[0].src = "img/buttons/" + RUNAWAY.src;
+    $('#button2')[0].setAttribute('role', RUNAWAY.role);
     $('#button2').show();
     isFighting = true;
-    isMoving = false;
-
-//    fightOver();
+    isPreventingEventsFlg = false;
   },100);
 }
 
 function fightOver() {
+  $('#monsterChar').hide();
+  $('#monsterChar').removeClass('fight');
+  $('#monsterCharHP').hide();
+  $('#monsterCharHP').removeClass('fight');
+  $('#yourChar').hide();
+  $('#yourChar').removeClass('fight');
+  $('#yourCharHP').hide();
+  $('#yourCharHP').removeClass('fight');
+  $('#button1').hide();
+  $('#button2').hide();
+  $('#viewCanvas').removeClass('animation');
   setTimeout(function(){
-    $('#monsterChar').hide();
-    $('#monsterChar').removeClass('fight');
-    $('#monsterCharHP').hide();
-    $('#monsterCharHP').removeClass('fight');
-    $('#yourChar').hide();
-    $('#yourChar').removeClass('fight');
-    $('#yourCharHP').hide();
-    $('#yourCharHP').removeClass('fight');
-    $('#button1').hide();
-    $('#button2').hide();
-    $('#viewCanvas').removeClass('animation');
-    setTimeout(function(){
-      $('#viewCanvas')[0].width = 300;
-      $('#viewCanvas')[0].height = 300;
-      drawMap(charX, charY, 0, 0, 0, 0, true);
+    $('#viewCanvas')[0].width = 300;
+    $('#viewCanvas')[0].height = 300;
+    drawMap(charX, charY, 0, 0, 0, 0, true);
       $('#yourChar').show();
-      isFighting = false;
-    },1000);
-  },5000);
+    isFighting = false;
+    isPreventingEventsFlg = false;
+  },1000);
 }
 
 function swipe(event) {
-  if (isMoving || isFighting) return;
-  if (isMessaging()) return;
+  $('#msg2').text("swipe " + isPreventingEvents());
+  
+  if (isPreventingEvents()) return;
+  if (isFighting) return;
 
   var direction = event.originalEvent.gesture.direction;
 
@@ -241,8 +245,35 @@ function swipe(event) {
 }
 
 function tap(event) {
-  $('#msg2').text('tap ' + event.originalEvent.gesture.target.id);
-//  event.originalEvent.gesture.target.addClass("tap");
+  if (isPreventingEvents()) return;
+
+  var id = event.originalEvent.gesture.target.id;
+  var role = event.originalEvent.gesture.target.getAttribute('role');
+
+  $('#msg2').text('tap ' + role);
+  $('#' + id).addClass("tap");
+
+  isPreventingEventsFlg = true;
+
+  setTimeout(function(){
+    $('#' + id).removeClass("tap");
+    isPreventingEventsFlg = false;
+    if (role == RUNAWAY.role) {
+      addMessage(yourChar.name + "はにげだした。");
+      fightOver();
+    } else if (role == FIGHT.role) {
+      $('#button1')[0].src = "img/buttons/" + yourChar.waza[0].src;
+      $('#button1')[0].setAttribute('role', yourChar.waza[0].role);
+      $('#button2')[0].src = "img/buttons/" + yourChar.waza[1].src;
+      $('#button2')[0].setAttribute('role', yourChar.waza[1].role);
+    } else {
+
+    }
+  },100);
+}
+
+function isPreventingEvents() {
+  return (isPreventingEventsFlg || isMessaging());
 }
 
 function isMessaging() {

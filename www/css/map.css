@@ -42,10 +42,10 @@
   transition: all 1s ease-in-out;
   position: absolute;
   z-index: 2;
+  overflow: hidden;
   left: 50%;
   width: 300px;
   height: 300px;
-  overflow: hidden;
   transform: translateX(-50%) perspective(300px);
 }
 
@@ -158,22 +158,43 @@
   width: 10px;
   height: 5px;
   left: 75%;
-}
-
-.bt.tap {
-  animation: bthover 0.5s linear;
-}
-
-@keyframes bthover {
-  0% { transform: translateZ(280px); }
-  50% { transform: translateZ(100px); }
-  100% { transform: translateZ(280px); }
+  margin: 0px;
+  padding: 0px;
 }
 
 #button1 {  
+  transition: all 0.5s;
   transform: translateY(300px) perspective(300px) translateZ(280px);
 }
 
+#button1.tap {  
+  transition: all 0.1s;
+  transform: translateY(300px) perspective(300px) translateZ(281px);
+/*  animation: bthover1 0.5s; */
+}
+
+@keyframes bthover1 {
+  0% { background-color: white; }
+  50% { background-color: black; }
+  100% { background-color: white; }
+}
+/*
+@keyframes bthover1 {
+  0% { transform: translateY(300px) perspective(300px) translateZ(280px); }
+  50% {  }
+  100% { transform: translateY(300px) perspective(300px) translateZ(280px); }
+}
+*/
 #button2 {  
   transform: translateY(375px) perspective(300px) translateZ(280px);
+}
+
+#button2.tap {  
+  animation: bthover2 0.5s;
+}
+
+@keyframes bthover2 {
+  0% { transform: translateY(375px) perspective(300px) translateZ(280px); }
+  50% { transform: translateY(375px) perspective(300px) translateZ(279px); }
+  100% { transform: translateY(375px) perspective(300px) translateZ(280px); }
 }
