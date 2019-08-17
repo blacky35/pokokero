@@ -33,11 +33,20 @@ var world = [
 ]; 
 
 var monsters = [
-  { name: "スライム", hp: 100, img: new Image(), src: "slime.png" },
+  { name: "スライム", hp: 100,
+    waza: [
+      { name: "たいあたり", action: "taiatari",
+        damage: 20, hitRatio: 0.7 },
+    ],
+    img: new Image(), src: "slime.png" },
 ];
 
-var FIGHT = { role: "fight", src: "button-fight.png" };
-var RUNAWAY = { role: "runaway", src: "button-runaway.png" };
+var num_monsters = 0;
+
+var currentMonster = { mo: -1, hp: 0 };
+
+var FIGHT = { action: "fight", src: "button-fight.png" };
+var RUNAWAY = { action: "runaway", src: "button-runaway.png" };
 
 var charX = 10;
 var charY = 12;
@@ -103,18 +112,18 @@ function initMap() {
 }
 
 function move(dx, dy) {
-  var charImgSrc = "img/characters/" + yourChar.img;
+  var charImgSrc = "img/characters/" + characters[yourChar.yo].img;
   var dir = "down";
   if (dx < 0) {
-    charImgSrc = "img/characters/" + yourChar.imgR;
+    charImgSrc = "img/characters/" + characters[yourChar.yo].imgR;
     dir = "right";
   }
   if (dx > 0) {
-    charImgSrc = "img/characters/" + yourChar.imgL;
+    charImgSrc = "img/characters/" + characters[yourChar.yo].imgL;
     dir = "left";
   }
   if (dy < 0) {
-    charImgSrc = "img/characters/" + yourChar.imgB;
+    charImgSrc = "img/characters/" + characters[yourChar.yo].imgB;
     dir = "up";
   }
 
@@ -171,43 +180,135 @@ function scroll(dx, dy, dd) {
 var isFighting = false;
 
 function encount(mo) {
-  addMessage(monsters[mo].name + "があらわれた！");
+  currentMonster.mo = mo;
+  currentMonster.hp = monsters[mo].hp;
+  yourChar.hp = characters[yourChar.yo].hp;
+
+  addMessage(monsters[currentMonster.mo].name + "があらわれた！");
   $('#yourChar').addClass('animation');
-  $('#yourChar')[0].src = "img/characters/" + yourChar.imgB;
-  $('#yourCharHP').addClass('animation');
-  $('#yourCharHP').show();
+  $('#yourChar')[0].src = "img/characters/" + characters[yourChar.yo].imgB;
+  $('#yourHP').addClass('animation');
+  $('#yourHP').show();
   $('#monsterChar').addClass('animation');
   $('#monsterChar')[0].src = "img/monsters/" + monsters[mo].src;
   $('#monsterChar').show();
-  $('#monsterCharHP').addClass('animation');
-  $('#monsterCharHP').show();
+  $('#monsterHP').addClass('animation');
+  $('#monsterHP').show();
   setTimeout(function() {
     drawMap(charX, charY, 0, 0, 0, 0, false);
     $('#viewCanvas').addClass('animation');
     $('#yourChar').removeClass('animation').addClass('fight');
-    $('#yourCharHP').removeClass('animation').addClass('fight');
+    $('#yourHP').removeClass('animation').addClass('fight');
     $('#monsterChar').removeClass('animation').addClass('fight');
-    $('#monsterCharHP').removeClass('animation').addClass('fight');
-    $('#button1')[0].src = "img/buttons/" + FIGHT.src;
-    $('#button1')[0].setAttribute('role', FIGHT.role);
+    $('#monsterHP').removeClass('animation').addClass('fight');
     $('#button1').show();
-    $('#button2')[0].src = "img/buttons/" + RUNAWAY.src;
-    $('#button2')[0].setAttribute('role', RUNAWAY.role);
     $('#button2').show();
     isFighting = true;
     isPreventingEventsFlg = false;
+    startYourTurn();
   },100);
+}
+
+function startYourTurn() {
+    $('#button1')[0].src = "img/buttons/" + FIGHT.src;
+    $('#button1')[0].setAttribute('action', FIGHT.action);
+    $('#button2')[0].src = "img/buttons/" + RUNAWAY.src;
+    $('#button2')[0].setAttribute('action', RUNAWAY.action);
+    isPreventingEventsFlg = false;
+}
+
+function yourAction(action) {
+  var you = characters[yourChar.yo];
+
+  if (action == RUNAWAY.action) {
+    addMessage(you.name + "はにげだした。");
+    fightOver();
+  } else if (action == FIGHT.action) {
+    $('#button1')[0].src = "img/buttons/" + you.waza[0].src;
+    $('#button1')[0].setAttribute('action', you.waza[0].action);
+    $('#button2')[0].src = "img/buttons/" + you.waza[1].src;
+    $('#button2')[0].setAttribute('action', you.waza[1].action);
+    addMessage(you.name + "のこうげき");
+    isPreventingEventsFlg = false;
+  } else {
+    for (var i = 0; i < you.waza.length; i++) {
+      if (action == you.waza[i].action) {
+        addMessage(you.name + "の" + you.waza[i].name + "!");
+        setTimeout(function(){
+          if (Math.random() < you.waza[i].hitRatio) {
+            var damage = you.waza[i].damage;
+            addMessage(monsters[currentMonster.mo].name + "に" + damage + "ダメージ!");
+
+            currentMonster.hp -= damage;
+            if (currentMonster.hp < 0) currentMonster.hp = 0;
+
+//          $('#monsterHP > .bar').css('width', hp + '%');
+          } else {
+            addMessage(monsters[currentMonster.mo].name + "によけられた。");
+          }
+
+          setTimeout(function(){
+            $('#msg2').text("You: " + yourChar.hp + " Monster(" + num_monsters + "): " + currentMonster.hp);
+            if (currentMonster.hp > 0) {
+              monstersAction();
+            } else {
+              addMessage(monsters[currentMonster.mo].name + "をたおした!");
+              world[charY][charX] -= 100 * (currentMonster.mo + 1);
+              num_monsters--;
+              if (num_monsters <= 0) {
+                addMessage("敵をぜんぶたおした!");
+              }
+              setTimeout(fightOver, 1000);
+            }
+          },1000);
+        },1000);
+
+        break;
+      }
+    }
+  }
+}
+
+function monstersAction() {
+  var mon = monsters[currentMonster.mo];
+  addMessage(mon.name + "のこうげき");
+  setTimeout(function() {
+    var i = Math.floor(Math.random() * mon.waza.length);
+    addMessage(mon.name + "の" + mon.waza[i].name + "!");
+
+    setTimeout(function(){
+      if (Math.random() < mon.waza[i].hitRatio) {
+        var damage = mon.waza[i].damage;
+        addMessage(characters[yourChar.yo].name + "に" + damage + "ダメージ!");
+        yourChar.hp -= damage;
+        if (yourChar.hp < 0) yourChar.hp = 0;
+
+      } else {
+        addMessage(characters[yourChar.yo].name + "はよけた。");
+      }
+
+      setTimeout(function(){
+        $('#msg2').text("You: " + yourChar.hp + " Monster(" + num_monsters + "): " + currentMonster.hp);
+        if (yourChar.hp > 0) {
+          startYourTurn();
+        } else {
+          addMessage(characters[yourChar.yo].name + "はちからつきた。");
+          setTimeout(fightOver, 1000);
+        }
+      },1000);
+    },1000);
+  },1000);
 }
 
 function fightOver() {
   $('#monsterChar').hide();
   $('#monsterChar').removeClass('fight');
-  $('#monsterCharHP').hide();
-  $('#monsterCharHP').removeClass('fight');
+  $('#monsterHP').hide();
+  $('#monsterHP').removeClass('fight');
   $('#yourChar').hide();
   $('#yourChar').removeClass('fight');
-  $('#yourCharHP').hide();
-  $('#yourCharHP').removeClass('fight');
+  $('#yourHP').hide();
+  $('#yourHP').removeClass('fight');
   $('#button1').hide();
   $('#button2').hide();
   $('#viewCanvas').removeClass('animation');
@@ -248,27 +349,16 @@ function tap(event) {
   if (isPreventingEvents()) return;
 
   var id = event.originalEvent.gesture.target.id;
-  var role = event.originalEvent.gesture.target.getAttribute('role');
+  var action = event.originalEvent.gesture.target.getAttribute('action');
 
-  $('#msg2').text('tap ' + role);
+  $('#msg2').text('tap ' + action);
   $('#' + id).addClass("tap");
 
   isPreventingEventsFlg = true;
 
   setTimeout(function(){
     $('#' + id).removeClass("tap");
-    isPreventingEventsFlg = false;
-    if (role == RUNAWAY.role) {
-      addMessage(yourChar.name + "はにげだした。");
-      fightOver();
-    } else if (role == FIGHT.role) {
-      $('#button1')[0].src = "img/buttons/" + yourChar.waza[0].src;
-      $('#button1')[0].setAttribute('role', yourChar.waza[0].role);
-      $('#button2')[0].src = "img/buttons/" + yourChar.waza[1].src;
-      $('#button2')[0].setAttribute('role', yourChar.waza[1].role);
-    } else {
-
-    }
+    yourAction(action);
   },100);
 }
 
@@ -312,12 +402,6 @@ $(document).on('pageinit', '#map', function() {
   $('#mapCanvas')[0].height = $('#viewCanvas')[0].height + CELL_HEIGHT * 2;
   $('#mapCanvas')[0].getContext('2d').translate(CELL_WIDTH, CELL_HEIGHT);
 
-  var a = new Array();
-  a[10] = 1;
-  a[20] = 2;
-
-//  $('#msg').text($('#mapCanvas')[0].width + " " + $('#mapCanvas')[0].height + " " + a.length);
-
   for (var i = 0; i < elements.length; i++) {
     elements[i].img.onload = initMap;
     elements[i].img.src = "img/world/" + elements[i].src;
@@ -328,13 +412,11 @@ $(document).on('pageinit', '#map', function() {
     monsters[i].img.src = "img/monsters/" + monsters[i].src;
   }
 
-  if (yourChar == null) {
-    yourChar = characters[Math.floor(Math.random() * 3)];
+  if (yourChar.yo < 0) {
+    yourChar.yo = Math.floor(Math.random() * 3);
   }
   
-  $('#yourChar')[0].src = "img/characters/" + yourChar.img;
-
-  var num_mo = 0;
+  $('#yourChar')[0].src = "img/characters/" + characters[yourChar.yo].img;
 
   do {
     var mx = Math.floor(Math.random() * WORLD_WIDTH);
@@ -342,9 +424,9 @@ $(document).on('pageinit', '#map', function() {
     if ((mx == charX && my == charY) || world[my][mx] != SG) continue;
 
     var mo = Math.floor(Math.random() * monsters.length);
-    world[my][mx] += 100* (mo + 1);
-    num_mo++;
-  } while (num_mo < 10);
+    world[my][mx] += 100 * (mo + 1);
+    num_monsters++;
+  } while (num_monsters < 10);
 
   $(document).on('swipe', '#viewCanvas', swipe);
   $(document).on('swipe', '#yourChar', swipe);
