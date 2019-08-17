@@ -1,3 +1,6 @@
+<ons-modal var="modalPage">
+  <div id="modalMsg"></div>
+</ons-modal>
 <ons-page id="map" modifier="map">
   <span id="msg2"></span><br>
   <div id="msgArea">
@@ -8,8 +11,8 @@
       <li></li>
     </ul>
   </div>
-  <ons-gesture-detector id="ges">
-    <div id="mapArea">
+  <ons-gesture-detector id="ges" style="overflow: hidden">
+<!--    <div id="mapArea" width="100%" height="100%" style="overflow: hidden"> -->
       <canvas id="viewCanvas" width="300px" height="300px" style="border: 1px yellow solid"></canvas>
       <canvas id="mapCanvas" style="display: none;"></canvas>
       <div id="yourHP" class="HP" style="display: none;"><div class="bar"></div></div>
@@ -18,6 +21,6 @@
       <img id="monsterChar" src="" style="display: none;">
       <img id="button1" class="bt" src="" style="display: none;">
       <img id="button2" class="bt" src="" style="display: none;">
-    </div>
+<!--    </div> -->
   </ons-gesture-detector>
 </ons-page>

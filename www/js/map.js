@@ -57,6 +57,8 @@ var CELL_WIDTH = 60;
 var CELL_HEIGHT = 60;
 
 var isPreventingEventsFlg = false;
+var isFighting = false;
+
 var msgQueue = [];
 
 function drawMap(cx, cy, top, bottom, left, right, moFlg) {
@@ -177,21 +179,22 @@ function scroll(dx, dy, dd) {
   }
 }
 
-var isFighting = false;
-
 function encount(mo) {
   currentMonster.mo = mo;
   currentMonster.hp = monsters[mo].hp;
   yourChar.hp = characters[yourChar.yo].hp;
 
   addMessage(monsters[currentMonster.mo].name + "があらわれた！");
+
   $('#yourChar').addClass('animation');
   $('#yourChar')[0].src = "img/characters/" + characters[yourChar.yo].imgB;
+  $('#yourHP > .bar').css('width', yourChar.hp + '%');
   $('#yourHP').addClass('animation');
   $('#yourHP').show();
   $('#monsterChar').addClass('animation');
   $('#monsterChar')[0].src = "img/monsters/" + monsters[mo].src;
   $('#monsterChar').show();
+  $('#monsterHP > .bar').css('width', currentMonster.hp + '%');
   $('#monsterHP').addClass('animation');
   $('#monsterHP').show();
   setTimeout(function() {
@@ -201,11 +204,13 @@ function encount(mo) {
     $('#yourHP').removeClass('animation').addClass('fight');
     $('#monsterChar').removeClass('animation').addClass('fight');
     $('#monsterHP').removeClass('animation').addClass('fight');
-    $('#button1').show();
-    $('#button2').show();
-    isFighting = true;
-    isPreventingEventsFlg = false;
-    startYourTurn();
+    setTimeout(function(){
+      $('#button1').show();
+      $('#button2').show();
+      isFighting = true;
+      isPreventingEventsFlg = false;
+      startYourTurn();
+    },1000);
   },100);
 }
 
@@ -242,13 +247,14 @@ function yourAction(action) {
             currentMonster.hp -= damage;
             if (currentMonster.hp < 0) currentMonster.hp = 0;
 
-//          $('#monsterHP > .bar').css('width', hp + '%');
+            drawMap(charX, charY, 0, 0, 0, 0, false);
+            $('#monsterHP > .bar').css('width', currentMonster.hp + '%');
           } else {
             addMessage(monsters[currentMonster.mo].name + "によけられた。");
           }
 
           setTimeout(function(){
-            $('#msg2').text("You: " + yourChar.hp + " Monster(" + num_monsters + "): " + currentMonster.hp);
+            $('#msg2').text("You:" + yourChar.hp + " Monster(" + num_monsters + "):" + currentMonster.hp);
             if (currentMonster.hp > 0) {
               monstersAction();
             } else {
@@ -256,7 +262,7 @@ function yourAction(action) {
               world[charY][charX] -= 100 * (currentMonster.mo + 1);
               num_monsters--;
               if (num_monsters <= 0) {
-                addMessage("敵をぜんぶたおした!");
+                setTimeout(missionComplete, 1000);
               }
               setTimeout(fightOver, 1000);
             }
@@ -267,6 +273,16 @@ function yourAction(action) {
       }
     }
   }
+}
+
+function missionComplete() {
+  $('#modalMsg').html("<p>敵をぜんぶたおした! </p><p>おめでとう!!</p>");
+  modalPage.show();
+  setTimeout(function(){
+    fightOver();
+    modalPage.hide();
+    appNavigator.resetToPage("selectCharacter.html", { animation: "slide" } );
+  },2000);
 }
 
 function monstersAction() {
@@ -282,18 +298,24 @@ function monstersAction() {
         addMessage(characters[yourChar.yo].name + "に" + damage + "ダメージ!");
         yourChar.hp -= damage;
         if (yourChar.hp < 0) yourChar.hp = 0;
+        $('#yourHP > .bar').css('width', yourChar.hp + '%');
 
       } else {
         addMessage(characters[yourChar.yo].name + "はよけた。");
       }
 
       setTimeout(function(){
-        $('#msg2').text("You: " + yourChar.hp + " Monster(" + num_monsters + "): " + currentMonster.hp);
+        $('#msg2').text("You:" + yourChar.hp + " Monster(" + num_monsters + "):" + currentMonster.hp);
         if (yourChar.hp > 0) {
           startYourTurn();
         } else {
-          addMessage(characters[yourChar.yo].name + "はちからつきた。");
-          setTimeout(fightOver, 1000);
+          $('#modalMsg').html("<p>" + characters[yourChar.yo].name + "はちからつきた。。。</p>");
+          modalPage.show();
+          fightOver();
+          setTimeout(function(){
+            modalPage.hide();
+            appNavigator.resetToPage("selectCharacter.html", { animation: "slide" } );
+          },3000);
         }
       },1000);
     },1000);
@@ -316,14 +338,14 @@ function fightOver() {
     $('#viewCanvas')[0].width = 300;
     $('#viewCanvas')[0].height = 300;
     drawMap(charX, charY, 0, 0, 0, 0, true);
-      $('#yourChar').show();
+    $('#yourChar').show();
     isFighting = false;
     isPreventingEventsFlg = false;
   },1000);
 }
 
 function swipe(event) {
-  $('#msg2').text("swipe " + isPreventingEvents());
+//  $('#msg2').text("swipe " + isPreventingEvents());
   
   if (isPreventingEvents()) return;
   if (isFighting) return;
@@ -351,7 +373,7 @@ function tap(event) {
   var id = event.originalEvent.gesture.target.id;
   var action = event.originalEvent.gesture.target.getAttribute('action');
 
-  $('#msg2').text('tap ' + action);
+//  $('#msg2').text('tap ' + action);
   $('#' + id).addClass("tap");
 
   isPreventingEventsFlg = true;
@@ -398,6 +420,12 @@ function showMessageAfterTicking() {
 }
 
 $(document).on('pageinit', '#map', function() {
+  isPreventingEventsFlg = false;
+  isFighting = false;
+  msgQueue = [];
+  charX = 10;
+  charY = 12;
+
   $('#mapCanvas')[0].width = $('#viewCanvas')[0].width + CELL_WIDTH * 2;
   $('#mapCanvas')[0].height = $('#viewCanvas')[0].height + CELL_HEIGHT * 2;
   $('#mapCanvas')[0].getContext('2d').translate(CELL_WIDTH, CELL_HEIGHT);
@@ -417,6 +445,12 @@ $(document).on('pageinit', '#map', function() {
   }
   
   $('#yourChar')[0].src = "img/characters/" + characters[yourChar.yo].img;
+
+  for (var y = 0; y < world.length; y++) {
+    for (var x = 0; x < world[y].length; x++) {
+      world[y][x] -= Math.floor(world[y][x] / 100) * 100;
+    }
+  }
 
   do {
     var mx = Math.floor(Math.random() * WORLD_WIDTH);
@@ -441,5 +475,7 @@ $(document).on('pageinit', '#map', function() {
     pause: 10,
   });
   $('#msgArea').on('vticker.afterTick', showMessageAfterTicking);
+
+  initMap();
 });
 

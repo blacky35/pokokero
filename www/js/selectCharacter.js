@@ -43,6 +43,8 @@ $(document).on('pageinit', '#selectCharacter', function() {
     $('.charImg')[i].src = "img/characters/" + characters[i].img;
   }
 
+  yourChar.yo = -1;
+
   $(document).on('tap', '.charImg', function(event) {
 //    console.log("tap" + $('#charSelect')[0].disabled);
     for (var i = 0; i < numCharacters; i++) {
