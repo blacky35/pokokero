@@ -425,6 +425,7 @@ $(document).on('pageinit', '#map', function() {
   msgQueue = [];
   charX = 10;
   charY = 12;
+  num_monsters = 0;
 
   $('#mapCanvas')[0].width = $('#viewCanvas')[0].width + CELL_WIDTH * 2;
   $('#mapCanvas')[0].height = $('#viewCanvas')[0].height + CELL_HEIGHT * 2;
