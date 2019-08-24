@@ -1,17 +1,38 @@
 // This is a JavaScript file
 
+var splash = [
+  { f: function(){$('#title11').addClass('animation');},      t: 1000 },
+  { f: function(){$('#title12').addClass('animation');},      t: 1000 },
+  { f: function(){$('#title13').addClass('animation');},      t: 1000 },
+  { f: function(){$('#title1').addClass('animation');},       t: 1000 },
+  { f: function(){$('#title21').addClass('animation');},      t: 1000 },
+  { f: function(){$('.titleholder2').addClass('animation');}, t: 1000 },
+  { f: function(){$('#title41').addClass('animation');},      t: 1000 },
+  { f: function(){$('#title51').addClass('animation');},      t: 3000 },
+];
+
+var timerId = 0;
+var index = 0;
+
+function splashAnimation() {
+  if (timerId == 0) return;
+
+  if (index < splash.length) {
+    splash[index].f();
+    timerId = setTimeout(splashAnimation, splash[++index].t);
+  } else {
+    timerId = 0;
+  }
+}
+
 $(document).on('pageinit', '#splash', function() {
-  setTimeout(function() { $('#title11').addClass('animation'); }, 1000);
-  setTimeout(function() { $('#title12').addClass('animation'); }, 2000);
-  setTimeout(function() { $('#title13').addClass('animation'); }, 3000);
-  setTimeout(function() { $('#title1').addClass('animation'); }, 4000);
-  setTimeout(function() { $('#title21').addClass('animation'); }, 5000);
-  setTimeout(function() { $('.titleholder2').addClass('animation'); }, 6000);
-  setTimeout(function() { $('#title41').addClass('animation'); }, 7000);
-  setTimeout(function() {
-     $('#title51').addClass('animation');
-     $('#splash').on('click', function() {
-       appNavigator.resetToPage("selectCharacter.html", { animation: "slide" } );
-     })
-    }, 10000);
+  $('#splash').on('click', function() {
+    if (timerId > 0) {
+      clearTimeout(timerId); 
+      timerId = 0;
+    }
+    appNavigator.resetToPage("selectCharacter.html", { animation: "slide" } );
+  });
+
+  timerId = setTimeout(splashAnimation, splash[index].t);
 });

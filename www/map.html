@@ -11,16 +11,18 @@
       <li></li>
     </ul>
   </div>
-  <ons-gesture-detector id="ges" style="overflow: hidden">
-<!--    <div id="mapArea" width="100%" height="100%" style="overflow: hidden"> -->
+  <ons-gesture-detector id="mapArea" style="overflow: hidden">
       <canvas id="viewCanvas" width="300px" height="300px" style="border: 1px yellow solid"></canvas>
       <canvas id="mapCanvas" style="display: none;"></canvas>
       <div id="yourHP" class="HP" style="display: none;"><div class="bar"></div></div>
       <img id="yourChar" src="">
       <div id="monsterHP" class="HP" style="display: none;"><div class="bar"></div></div>
       <img id="monsterChar" src="" style="display: none;">
-      <img id="button1" class="bt" src="" style="display: none;">
-      <img id="button2" class="bt" src="" style="display: none;">
-<!--    </div> -->
   </ons-gesture-detector>
+<!--  <img id="button1" class="bt" src="" style="display: none;">
+  <img id="button2" class="bt" src="" style="display: none;"> -->
+  <div id="buttonArea">
+    <ons-button id="button1" class="bt" style="display: none;" onClick="clickMapButton(this);"></ons-button>
+    <ons-button id="button2" class="bt" style="display: none;" onClick="clickMapButton(this);"></ons-button>
+  </div>
 </ons-page>

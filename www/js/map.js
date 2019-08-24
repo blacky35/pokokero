@@ -45,8 +45,8 @@ var num_monsters = 0;
 
 var currentMonster = { mo: -1, hp: 0 };
 
-var FIGHT = { action: "fight", src: "button-fight.png" };
-var RUNAWAY = { action: "runaway", src: "button-runaway.png" };
+var FIGHT = { name: "たたかう", action: "fight" };
+var RUNAWAY = { name: "にげる", action: "runaway" };
 
 var charX = 10;
 var charY = 12;
@@ -215,9 +215,9 @@ function encount(mo) {
 }
 
 function startYourTurn() {
-    $('#button1')[0].src = "img/buttons/" + FIGHT.src;
+    $('#button1').text(FIGHT.name);
     $('#button1')[0].setAttribute('action', FIGHT.action);
-    $('#button2')[0].src = "img/buttons/" + RUNAWAY.src;
+    $('#button2').text(RUNAWAY.name);
     $('#button2')[0].setAttribute('action', RUNAWAY.action);
     isPreventingEventsFlg = false;
 }
@@ -229,9 +229,9 @@ function yourAction(action) {
     addMessage(you.name + "はにげだした。");
     fightOver();
   } else if (action == FIGHT.action) {
-    $('#button1')[0].src = "img/buttons/" + you.waza[0].src;
+    $('#button1').text(you.waza[0].name);
     $('#button1')[0].setAttribute('action', you.waza[0].action);
-    $('#button2')[0].src = "img/buttons/" + you.waza[1].src;
+    $('#button2').text(you.waza[1].name);
     $('#button2')[0].setAttribute('action', you.waza[1].action);
     addMessage(you.name + "のこうげき");
     isPreventingEventsFlg = false;
@@ -367,21 +367,19 @@ function swipe(event) {
   }
 }
 
-function tap(event) {
+function clickMapButton(button) {
   if (isPreventingEvents()) return;
 
-  var id = event.originalEvent.gesture.target.id;
-  var action = event.originalEvent.gesture.target.getAttribute('action');
+  var action = button.getAttribute('action');
 
-//  $('#msg2').text('tap ' + action);
-  $('#' + id).addClass("tap");
+  $('#msg2').text('tap ' + action);
 
   isPreventingEventsFlg = true;
 
-  setTimeout(function(){
-    $('#' + id).removeClass("tap");
+//  setTimeout(function(){
+//    $('#' + id).removeClass("tap");
     yourAction(action);
-  },100);
+//  },100);
 }
 
 function isPreventingEvents() {
@@ -465,8 +463,8 @@ $(document).on('pageinit', '#map', function() {
 
   $(document).on('swipe', '#viewCanvas', swipe);
   $(document).on('swipe', '#yourChar', swipe);
-  $(document).on('tap', '#button1', tap);
-  $(document).on('tap', '#button2', tap);
+//  $(document).on('tap', '#button1', tap);
+//  $(document).on('tap', '#button2', tap);
 
   $('#msgArea').vTicker({
     showItems: 3,

@@ -30,20 +30,14 @@
   border-radius: 15px;
 }
 
-#ges {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: 70%;
-  margin-top: 20px; 
-  perspective: 300px;
-  border: 10px yellow 
-}
-
 #mapArea {
   position: relative;
   z-index: 1;
-  height: 100px;
+  width: 100%;
+  height: 50%;
+  margin-top: 20px; 
+  perspective: 300px;
+  border: 10px yellow 
 }
 
 #viewCanvas {
@@ -59,19 +53,8 @@
 
 #viewCanvas.animation {
   z-index: 2;
-  transform: translateX(-20%) /* perspective(300px) */ translateY(200px) rotateX(80deg) scale3d(10,10,1); 
+  transform: translate3d(-20%, 60px, -50px) scale3d(30,30,1) /* perspective(300px) */ rotateX(85deg); 
 }
-
-/*
-.HP {
-  position: absolute;
-  z-index: 5;
-  width: 25px;
-  height: 3px;
-  padding: 1px;
-  background-color: black;
-}
-*/
 
 .HP {
   position: absolute;
@@ -98,7 +81,7 @@
 #yourHP.fight {
   transition: all 1s ease-in-out 1s;
   left: 10%;
-  transform: translateY(150px) /* perspective(300px) translateZ(250px)*/;
+  transform: translateY(40px) /* perspective(300px) translateZ(250px)*/;
 }
 
 #yourChar {
@@ -125,7 +108,7 @@
   width: 120px;
   height: 160px;
   left: 10%;
-  transform: translateY(50px) /* perspective(300px) translateZ(250px) */;
+  transform: translateY(-50px) /* perspective(300px) translateZ(250px) */;
 }
 
 #monsterHP.animation {
@@ -136,7 +119,7 @@
 #monsterHP.fight {
   transition: all 1s ease-in-out 1s;
   left: 60%;
-  transform: translateY(110px) /* perspective(300px) translateZ(150px) */;
+  transform: translateY(10px) /* perspective(300px) translateZ(150px) */;
 }
 
 #monsterChar {
@@ -157,7 +140,7 @@
   width: 120px;
   height: 120px;
   left: 60%;
-  transform: translateY(140px) /* perspective(300px) translateZ(250px) */;
+  transform: translateY(40px) /* perspective(300px) translateZ(250px) */;
 }
 
 /*
@@ -170,25 +153,45 @@
 }
 */
 
+#buttonArea {
+  position: relative;
+  z-index: 1;
+  width: 95%;
+  height: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  border: solid;
+}
+
 .bt {
   /*  transition: all 1s ease-in-out 1s; */
   position: absolute;
-  z-index: 4;
-  width: 100px;
-  height: 50px;
-  left: 55%;
-  margin: 0px;
-  padding: 0px;
+  z-index: 10;
+  width: 150px;
+  height: 60px;
+  left: 35%;
+/*  margin: 0px; */
+  padding: 10px;
+  font-size: 24px;
+  color: white;
+  text-align: center;
+/*  background-color: #345c6d; */
+  border: double;
+  border-radius: 10px;
 }
 
 #button1 {  
-  transition: all 0.5s;
-  transform: translateY(260px) /* perspective(300px) */ translateZ(100px);
+  top: 0px;
+}
+
+#button2 {  
+  top: 65px;
 }
 
 #button1.tap {  
   transition: all 0.1s;
-  transform: translateY(260px) /* perspective(300px) */ translateZ(101px);
+  transform: translateY(260px) /* perspective(300px) translateZ(101px)*/ ;
 /*  animation: bthover1 0.5s; */
 }
 
@@ -204,13 +207,10 @@
   100% { transform: translateY(300px) perspective(300px) translateZ(280px); }
 }
 */
-#button2 {  
-  transform: translateY(310px) /* perspective(300px) */ translateZ(100px);
-}
 
 #button2.tap {  
   transition: all 0.1s;
-  transform: translateY(310px) /* perspective(300px) */ translateZ(101px);
+  transform: translateY(310px) /* perspective(300px)  translateZ(101px); */
 /*  animation: bthover2 0.5s; */
 }
 
